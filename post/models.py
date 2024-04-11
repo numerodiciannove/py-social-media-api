@@ -9,9 +9,9 @@ from django.utils.translation import gettext as _
 
 def post_image_file_path(instance, filename):
     _, extension = os.path.splitext(filename)
-    filename = f"{slugify(instance.email)}-{uuid.uuid4()}{extension}"
+    filename = f"{slugify(instance.name)}-{uuid.uuid4()}{extension}"
 
-    return os.path.join("uploads/users/", filename)
+    return os.path.join("uploads/posts/", filename)
 
 
 class Post(models.Model):
@@ -59,3 +59,4 @@ class Tags(models.Model):
 
     def __str__(self):
         return self.name
+f = 'fdf'
