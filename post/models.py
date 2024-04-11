@@ -15,6 +15,7 @@ def post_image_file_path(instance, filename):
 
 
 class Post(models.Model):
+    title = models.CharField(max_length=100)
     content = models.TextField()
     image = models.ImageField(
         _("post_image"), null=True, upload_to=post_image_file_path
@@ -27,6 +28,12 @@ class Post(models.Model):
         get_user_model, related_name="liked_posts", blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = (
+            "created_at",
+            "title",
+        )
 
     def __str__(self):
         return (
