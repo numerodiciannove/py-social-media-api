@@ -50,6 +50,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name="post_comments")
+    content = models.TextField()
     author = models.ForeignKey(get_user_model, related_name="autor_comments")
     created_at = models.DateTimeField(auto_now_add=True)
 
