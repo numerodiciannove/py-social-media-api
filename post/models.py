@@ -14,6 +14,13 @@ def post_image_file_path(instance, filename):
     return os.path.join("uploads/posts/", filename)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
@@ -23,7 +30,7 @@ class Post(models.Model):
     author = models.ForeignKey(
         get_user_model, related_name="autor_posts", on_delete=models.CASCADE
     )
-    tags = models.ManyToManyField(Tags, related_name="post_hashtags")
+    tags = models.ManyToManyField(Tag, related_name="post_hashtags")
     likes = models.ManyToManyField(
         get_user_model, related_name="liked_posts", blank=True
     )
@@ -37,8 +44,7 @@ class Post(models.Model):
 
     def __str__(self):
         return (
-            f"{self.author.username}'s post "
-            f"at {self.created_at}. Tags {self.tags}"
+            f"{self.author.username}'s post " f"at {self.created_at}. Tags {self.tags}"
         )
 
 
@@ -49,14 +55,5 @@ class Comment(models.Model):
 
     def __str__(self):
         return (
-            f"Comment by {self.author.username} "
-            f"on {self.post} at {self.created_at}"
+            f"Comment by {self.author.username} " f"on {self.post} at {self.created_at}"
         )
-
-
-class Tags(models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-f = 'fdf'
