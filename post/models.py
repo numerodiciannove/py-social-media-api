@@ -1,16 +1,24 @@
+import os
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.utils.text import slugify
+from django.utils.translation import gettext as _
 
 
-class Tags(models.Model):
-    name = models.CharField(max_length=255)
+def post_image_file_path(instance, filename):
+    _, extension = os.path.splitext(filename)
+    filename = f"{slugify(instance.email)}-{uuid.uuid4()}{extension}"
 
-    def __str__(self):
-        return self.name
+    return os.path.join("uploads/users/", filename)
 
 
 class Post(models.Model):
     content = models.TextField()
+    image = models.ImageField(
+        _("post_image"), null=True, upload_to=post_image_file_path
+    )
     author = models.ForeignKey(
         get_user_model, related_name="autor_posts", on_delete=models.CASCADE
     )
@@ -37,3 +45,10 @@ class Comment(models.Model):
             f"Comment by {self.author.username} "
             f"on {self.post} at {self.created_at}"
         )
+
+
+class Tags(models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
