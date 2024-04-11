@@ -35,6 +35,7 @@ class Post(models.Model):
         get_user_model, related_name="liked_posts", blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
+    changed_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = (
