@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 
@@ -11,11 +12,11 @@ class Tags(models.Model):
 class Post(models.Model):
     content = models.TextField()
     author = models.ForeignKey(
-        User, related_name="autor_posts", on_delete=models.CASCADE
+        get_user_model, related_name="autor_posts", on_delete=models.CASCADE
     )
     tags = models.ManyToManyField(Tags, related_name="post_hashtags")
     likes = models.ManyToManyField(
-        User, related_name="liked_posts", blank=True
+        get_user_model, related_name="liked_posts", blank=True
     )
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -28,7 +29,7 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, related_name="post_comments")
-    author = models.ForeignKey(User, related_name="autor_comments")
+    author = models.ForeignKey(get_user_model, related_name="autor_comments")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
