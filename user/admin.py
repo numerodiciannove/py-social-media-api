@@ -23,7 +23,7 @@ class UserAdmin(DjangoUserAdmin):
                     "username",
                     "first_name",
                     "last_name",
-                    "bio",
+                    "user_info",
                     "birthday",
                 )
             },
