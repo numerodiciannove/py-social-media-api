@@ -18,6 +18,11 @@ from user.serializers import (
 )
 
 
+class UserListPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 100
+
+
 class FollowUserView(APIView):
     permission_classes = (IsAuthenticated,)
 
@@ -33,8 +38,8 @@ class FollowUserView(APIView):
         """The user follows another user"""
         user_to_follow = get_object_or_404(get_user_model(), pk=pk)
         if (
-            request.user == user_to_follow
-            or user_to_follow in request.user.follows.all()
+                request.user == user_to_follow
+                or user_to_follow in request.user.follows.all()
         ):
             return Response(
                 {"error": "You cannot follow this user."},
@@ -43,18 +48,20 @@ class FollowUserView(APIView):
 
         request.user.follows.add(user_to_follow)
         return Response(
-            {"message": "User followed successfully."}, status=status.HTTP_201_CREATED
+            {"message": "User followed successfully."},
+            status=status.HTTP_201_CREATED
         )
 
     @extend_schema(
-        request=None, responses={status.HTTP_204_NO_CONTENT: None}, methods=["DELETE"]
+        request=None, responses={status.HTTP_204_NO_CONTENT: None},
+        methods=["DELETE"]
     )
     def delete(self, request, pk=None):
         """The user unfollows another user"""
         user_to_unfollow = get_object_or_404(get_user_model(), pk=pk)
         if (
-            request.user == user_to_unfollow
-            or user_to_unfollow not in request.user.follows.all()
+                request.user == user_to_unfollow
+                or user_to_unfollow not in request.user.follows.all()
         ):
             return Response(
                 {"error": "You cannot unfollow this user."},
@@ -75,11 +82,6 @@ class CreateUserView(generics.CreateAPIView):
 class CreateTokenView(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
     serializer_class = AuthTokenSerializer
-
-
-class UserListPagination(PageNumberPagination):
-    page_size = 10
-    max_page_size = 100
 
 
 class UserListView(generics.ListAPIView):
@@ -120,11 +122,17 @@ class ManageUserView(generics.RetrieveUpdateAPIView):
     )
 
 
+class CurrentUserView(ManageUserView):
+    def get_object(self):
+        return self.request.user
+
+
 class LogoutUserView(APIView):
     permission_classes = (IsAuthenticated,)
 
     @extend_schema(
-        request=None, responses={status.HTTP_204_NO_CONTENT: None}, methods=["DELETE"]
+        request=None, responses={status.HTTP_204_NO_CONTENT: None},
+        methods=["DELETE"]
     )
     def delete(self, request):
         """Delete user's token"""
