@@ -25,7 +25,10 @@ class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     image = models.ImageField(
-        _("post_image"), null=True, upload_to=post_image_file_path
+        _("post_image"),
+        null=True,
+        upload_to=post_image_file_path,
+        blank=True,
     )
     author = models.ForeignKey(
         get_user_model(), related_name="autor_posts", on_delete=models.CASCADE
@@ -45,7 +48,8 @@ class Post(models.Model):
 
     def __str__(self):
         return (
-            f"{self.author.username}'s post " f"at {self.created_at}. Tags {self.tags}"
+            f"{self.author.username}'s post "
+            f"at {self.created_at}. Tags {self.tags}"
         )
 
 
@@ -63,5 +67,6 @@ class Comment(models.Model):
 
     def __str__(self):
         return (
-            f"Comment by {self.author.username} " f"on {self.post} at {self.created_at}"
+            f"Comment by {self.author.username} "
+            f"on {self.post} at {self.created_at}"
         )

@@ -64,6 +64,7 @@ class User(AbstractUser):
     avatar = models.ImageField(
         _("avatar"),
         null=True,
+        blank=True,
         upload_to=user_image_file_path,
     )
     user_info = models.TextField(_("user_info"), max_length=255, null=True)
