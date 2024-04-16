@@ -3,6 +3,7 @@ from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -18,6 +19,11 @@ from post.serializers import (
 )
 
 
+class DefaultPagination(PageNumberPagination):
+    page_size = 10
+    max_page_size = 100
+
+
 class TagViewSet(
     mixins.CreateModelMixin,
     mixins.ListModelMixin,
@@ -25,6 +31,7 @@ class TagViewSet(
 ):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
+    pagination_class = DefaultPagination
     permission_classes = (IsAuthenticated,)
 
 
@@ -32,6 +39,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """Shows only author's comments if author is authorized"""
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
+    pagination_class = DefaultPagination
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
@@ -46,6 +54,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all()
+    pagination_class = DefaultPagination
     permission_classes = (IsAuthenticated, IsPostAuthorOrReadOnly)
 
     def get_serializer_class(self):
