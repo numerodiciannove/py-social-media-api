@@ -22,3 +22,7 @@ services:
     image: postgres:14-alpine
     env_file:
       - .env
+
+volumes:
+  social_media_db:
+  social_media:
