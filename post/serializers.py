@@ -1,4 +1,3 @@
-from django.db.models import Prefetch
 from rest_framework import serializers
 
 from post.models import Tag, Post, Comment
@@ -11,15 +10,31 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = (
+            "id",
+            "content",
+            "created_at",
+        )
+
+
+class CommentListSerializer(serializers.ModelSerializer):
     author = serializers.HyperlinkedRelatedField(
-        many=False,
-        read_only=True,
         view_name="user:manage",
+        read_only=True,
+        many=False,
     )
 
     class Meta:
         model = Comment
-        fields = ("id", "author", "content", "created_at")
+        fields = (
+            "id",
+            "post",
+            "author",
+            "content",
+            "created_at",
+        )
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -31,9 +46,7 @@ class PostSerializer(serializers.ModelSerializer):
     )
     comments_count = serializers.SerializerMethodField()
     tags = serializers.SlugRelatedField(
-        many=True,
-        slug_field="name",
-        queryset=Tag.objects.all()
+        many=True, slug_field="name", queryset=Tag.objects.all()
     )
 
     @staticmethod
@@ -43,12 +56,6 @@ class PostSerializer(serializers.ModelSerializer):
     @staticmethod
     def get_comments_count(post):
         return post.post_comments.count()
-
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        if data["created_at"] == data["changed_at"]:
-            data.pop("changed_at")
-        return data
 
     class Meta:
         model = Post
@@ -71,9 +78,7 @@ class PostRetrieveSerializer(PostSerializer):
         many=True, read_only=True, slug_field="username"
     )
     comments = CommentSerializer(
-        many=True,
-        read_only=True,
-        source="post_comments"
+        many=True, read_only=True, source="post_comments"
     )
 
     class Meta:
