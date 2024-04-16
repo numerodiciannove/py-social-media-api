@@ -1,9 +1,10 @@
 # Social Media API
-This app performs basic social media actions.
+The API allows users to perform various social media actions such as user registration and authentication, profile management, post creation and retrieval, following/unfollowing other users, and more.
 
 ### Technologies
 - Python
 - Django
+- Django REST Framework
 - Postgre SQL
 - Swagger documentation
 
