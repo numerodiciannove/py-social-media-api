@@ -2,7 +2,6 @@ from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status, viewsets, mixins
 from rest_framework.decorators import action
-from rest_framework.exceptions import PermissionDenied
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -37,6 +36,7 @@ class TagViewSet(
 
 class CommentViewSet(viewsets.ModelViewSet):
     """Shows only author's comments if author is authorized"""
+
     queryset = Comment.objects.all()
     serializer_class = CommentListSerializer
     pagination_class = DefaultPagination
@@ -85,12 +85,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def destroy(self, request, *args, **kwargs):
         """Delete author's own post if author is authorized"""
         instance = self.get_object()
-        if instance.author != request.user:
-            raise PermissionDenied(
-                "You do not have permission to delete this post."
-            )
         self.perform_destroy(instance)
-
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
@@ -102,9 +97,8 @@ class PostViewSet(viewsets.ModelViewSet):
         """The user receives all his/her posts"""
         queryset = Post.objects.filter(author=request.user)
         serializer = PostSerializer(
-            queryset,
-            many=True,
-            context={"request": request})
+            queryset, many=True, context={"request": request}
+        )
 
         return Response(serializer.data)
 
@@ -134,10 +128,11 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
-        detail=True, methods=["DELETE"],
-        url_path="comments/(?P<comment_pk>[^/.]+)"
+        detail=True,
+        methods=["DELETE"],
+        url_path="comments/(?P<comment_pk>[^/.]+)",
     )
-    def comment_delete(self, request, pk=None, comment_pk=None):
+    def delete_comment(self, request, pk=None, comment_pk=None):
         comment = get_object_or_404(Comment, pk=comment_pk, post__id=pk)
         if request.user == comment.author:
             comment.delete()
@@ -145,7 +140,8 @@ class PostViewSet(viewsets.ModelViewSet):
         else:
             return Response(
                 {
-                    "error": "You do not have permission to delete this comment."},
+                    "error": "You do not have permission to delete this comment."
+                },
                 status=status.HTTP_403_FORBIDDEN,
             )
 

@@ -8,8 +8,6 @@ router.register("tags", TagViewSet)
 router.register("posts", PostViewSet)
 router.register("comments", CommentViewSet)
 
-urlpatterns = [
-    path("", include(router.urls)),
-]
+urlpatterns = router.urls
 
 app_name = "post"
