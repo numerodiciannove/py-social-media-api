@@ -1,4 +1,5 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.exceptions import PermissionDenied
 
 
 class IsAdminOrIfAuthenticatedReadOnly(BasePermission):
@@ -17,7 +18,11 @@ class IsPostAuthorOrReadOnly(BasePermission):
     def has_object_permission(self, request, view, obj):
         if request.method in ("GET", "HEAD", "OPTIONS", "POST"):
             return True
-        return obj.author == request.user
+        if obj.author != request.user:
+            raise PermissionDenied(
+                "You do not have permission to perform this action."
+            )
+        return True
 
 
 class IsCommentAuthorOrReadOnly(BasePermission):
